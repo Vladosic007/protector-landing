@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs / temp
+*.log
+*.tmp
+
+# Исходники дизайна и бэкап — не нужны на сайте
+*.pdf
+Бронеплёнка Protector.html
+
+# Внутренняя инструкция (содержит ID Google-таблицы — не публикуем)
+Подключение-таблицы.md
