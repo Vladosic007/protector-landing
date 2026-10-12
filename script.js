@@ -9,10 +9,8 @@
      ====================================================================== */
   var CONFIG = {
     formEndpoint: 'https://script.google.com/macros/s/AKfycbzzBe-Ve6rEUNtlstOclpFm5a7lNL5RtlqeYUUD-61yRffpBCjeA_M33C-Icy-gEtCh2Q/exec',
-    phonePrimary: '8 960 405-89-87'
+    phonePrimary: '8 961 312-26-08'
   };
-
-  var RATE = 2000;             // ₽ за м² (прозрачная плёнка, «от»)
 
   // ---------- Мобильное меню ----------
   var hdr = document.getElementById('hdr');
@@ -35,7 +33,12 @@
   // ---------- Калькулятор стоимости ----------
   var area = document.getElementById('area');
   var out = document.getElementById('calcOut');
+  var hint = document.getElementById('calcHint');
   var presets = document.getElementById('calcPresets');
+  var toggle = document.getElementById('filmToggle');
+  var rate = 3000;            // ₽ за м², 200 мкм по умолчанию (300 мкм = 3300)
+  var DISCOUNT_FROM = 10;     // м², с которой действует скидка
+  var DISCOUNT = 0.10;        // 10%
 
   function fmt(n){ return n.toLocaleString('ru-RU'); }
 
@@ -50,9 +53,29 @@
   function calc(){
     if (!area || !out) return;
     var v = parseFloat((area.value || '').replace(',', '.'));
-    if (!isFinite(v) || v <= 0) { out.textContent = 'от 2 000 ₽'; markActivePreset(); return; }
-    out.textContent = 'от ' + fmt(Math.round(v * RATE)) + ' ₽';
+    if (!isFinite(v) || v <= 0) {
+      out.textContent = '—';
+      if (hint) hint.textContent = '';
+      markActivePreset();
+      return;
+    }
+    var sum = v * rate;
+    var discounted = v >= DISCOUNT_FROM;
+    if (discounted) sum = sum * (1 - DISCOUNT);
+    out.textContent = fmt(Math.round(sum)) + ' ₽';
+    if (hint) hint.textContent = discounted ? 'со скидкой 10%' : '';
     markActivePreset();
+  }
+
+  if (toggle) {
+    toggle.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        toggle.querySelectorAll('button').forEach(function(x){ x.classList.remove('active'); });
+        b.classList.add('active');
+        rate = parseInt(b.getAttribute('data-rate'), 10) || rate;
+        calc();
+      });
+    });
   }
 
   if (area) {
